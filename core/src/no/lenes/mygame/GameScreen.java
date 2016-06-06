@@ -20,7 +20,6 @@ public class GameScreen extends ScreenAdapter {
     static final int GAME_OVER = 3;
 
     MyGame game;
-    int state;
     OrthographicCamera guiCam;
     Vector3 touchPoint;
     World world;
@@ -30,6 +29,8 @@ public class GameScreen extends ScreenAdapter {
     World.WorldListener worldListener;
 
     int lastScore;
+    int state;
+
     String scoreString;
 
     float sizeX = 720;

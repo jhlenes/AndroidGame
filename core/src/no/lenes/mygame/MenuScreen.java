@@ -13,13 +13,13 @@ public class MenuScreen extends ScreenAdapter {
     OrthographicCamera guiCam;
     Vector3 touchPoint;
 
-    float sizeX = 720;
-    float sizeY = 1280;
+    public static final float SIZE_X = 720;
+    public static final float SIZE_Y = 1280;
 
     public MenuScreen(MyGame game) {
         this.game = game;
-        guiCam = new OrthographicCamera(sizeX, sizeY);
-        guiCam.position.set(sizeX / 2, sizeY / 2, 0);
+        guiCam = new OrthographicCamera(SIZE_X, SIZE_Y);
+        guiCam.position.set(SIZE_X / 2, SIZE_Y / 2, 0);
         touchPoint = new Vector3();
     }
 
@@ -30,10 +30,13 @@ public class MenuScreen extends ScreenAdapter {
     }
 
     private void update() {
-        // TODO: 06.06.2016 This is not working at all!
         if (Gdx.input.justTouched()) {
+
+            // Transform actual screen coordinates to game coordinates
             guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if (touchPoint.y >= sizeY * 4f / 7f - Assets.menuFont.getLineHeight() && touchPoint.y <= sizeY * 4f / 7f) {
+
+            // Play button
+            if (touchPoint.y >= SIZE_Y * 4f / 7f - Assets.menuFont.getLineHeight() && touchPoint.y <= SIZE_Y * 4f / 7f) {
                 game.setScreen(new GameScreen(game));
             }
         }
@@ -50,12 +53,12 @@ public class MenuScreen extends ScreenAdapter {
         game.batcher.enableBlending();
         game.batcher.begin();
 
-        GlyphLayout layout = new GlyphLayout(Assets.menuFont, "THE GAME");
-        Assets.menuFont.draw(game.batcher, "THE GAME", sizeX / 2 - layout.width / 2, sizeY * 4f / 5f);
+        GlyphLayout layout = new GlyphLayout(Assets.menuFont, "Alien Escape");
+        Assets.menuFont.draw(game.batcher, "Alien Escape", SIZE_X / 2 - layout.width / 2, SIZE_Y * 4f / 5f);
         layout.setText(Assets.menuFont, "PLAY");
-        Assets.menuFont.draw(game.batcher, "PLAY", sizeX / 2 - layout.width / 2, sizeY * 4f / 7f);
+        Assets.menuFont.draw(game.batcher, "PLAY", SIZE_X / 2 - layout.width / 2, SIZE_Y * 4f / 7f);
         layout.setText(Assets.menuFont, "HIGHSCORES");
-        Assets.menuFont.draw(game.batcher, "HIGHSCORES", sizeX / 2 - layout.width / 2, sizeY * 4f / 7f - Assets.menuFont.getLineHeight());
+        Assets.menuFont.draw(game.batcher, "HIGHSCORES", SIZE_X / 2 - layout.width / 2, SIZE_Y * 4f / 7f - Assets.menuFont.getLineHeight());
 
         game.batcher.end();
     }

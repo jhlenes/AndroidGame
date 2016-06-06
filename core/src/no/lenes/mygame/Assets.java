@@ -2,6 +2,7 @@ package no.lenes.mygame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -9,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class Assets {
+
+    public static Texture background;
 
     public static Texture items;
     public static TextureRegion alienFront;
@@ -35,6 +38,8 @@ public class Assets {
     }
 
     public static void load() {
+        background = loadTexture("background.png");
+
         items = loadTexture("items.png");
         alienFront = new TextureRegion(items, 430, 301, 104, 149);
         alienHit = new TextureRegion(items, 534, 301, 109, 150);
@@ -78,10 +83,12 @@ public class Assets {
         // Font
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 40;
-        scoreFont = generator.generateFont(parameter);
         parameter.size = 80;
         menuFont = generator.generateFont(parameter);
+        parameter.size = 40;
+        parameter.borderWidth = 2;
+        parameter.borderColor = new Color(0f, 0f, 0f, 1f);
+        scoreFont = generator.generateFont(parameter);
         generator.dispose();
     }
 

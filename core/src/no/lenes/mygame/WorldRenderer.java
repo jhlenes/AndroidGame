@@ -4,11 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 
 public class WorldRenderer {
 
     static final float FRUSTUM_WIDTH = 9;
     static final float FRUSTUM_HEIGHT = 16;
+
     World world;
     OrthographicCamera cam;
     SpriteBatch batch;
@@ -31,21 +33,42 @@ public class WorldRenderer {
     }
 
     public void renderBackground() {
-        Gdx.gl.glClearColor(208f / 255, 244f / 255, 247f / 255, 0);
-        //batch.disableBlending();
-        //batch.begin();
-        //batch.draw(Assets.background, 0, 0, 720, 1280);
-        //batch.end();
+        Gdx.gl.glClearColor(213f / 255, 237f / 255, 247f / 255, 0);
+        batch.disableBlending();
+        if (cam.position.y < 16) {
+            batch.begin();
+            batch.draw(Assets.background, 0, -4, 13, 16);
+            batch.end();
+        }
     }
 
     public void renderObjects() {
         batch.enableBlending();
         batch.begin();
-        renderAlien();
+        renderClouds();
         renderPlatforms();
         renderItems();
         renderEnemies();
+        renderAlien();
         batch.end();
+    }
+
+    private void renderClouds() {
+        int len = world.clouds.size();
+        for (int i = 0; i < len; i++) {
+            Cloud cloud = world.clouds.get(i);
+            switch (cloud.type) {
+                case 1:
+                    batch.draw(Assets.cloud1, cloud.position.x, cloud.position.y, Cloud.CLOUD_WIDTH, Cloud.CLOUD_HEIGHT);
+                    break;
+                case 2:
+                    batch.draw(Assets.cloud2, cloud.position.x, cloud.position.y, Cloud.CLOUD_WIDTH, Cloud.CLOUD_HEIGHT);
+                    break;
+                case 3:
+                    batch.draw(Assets.cloud3, cloud.position.x, cloud.position.y, Cloud.CLOUD_WIDTH, Cloud.CLOUD_HEIGHT);
+                    break;
+            }
+        }
     }
 
     private void renderAlien() {

@@ -1,5 +1,6 @@
 package no.lenes.mygame;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class World {
     public List<Bee> bees;
     public List<WingMan> wingMen;
     public List<Coin> coins;
+    public List<Cloud> clouds;
 
     public final WorldListener listener;
     public final Random rand;
@@ -50,6 +52,7 @@ public class World {
         this.bees = new ArrayList<Bee>();
         this.wingMen = new ArrayList<WingMan>();
         this.coins = new ArrayList<Coin>();
+        this.clouds = new ArrayList<Cloud>();
         this.listener = listener;
         rand = new Random();
 
@@ -101,6 +104,12 @@ public class World {
                 coins.add(coin);
             }
 
+            // Add clouds
+            if (y > WORLD_HEIGHT / 2 && rand.nextFloat() > 0.5) {
+                Cloud cloud = new Cloud(MathUtils.random(1, 3), rand.nextFloat() * 4, y);
+                clouds.add(cloud);
+            }
+
             // Add bees
             if (y > WORLD_HEIGHT * 2 && rand.nextFloat() > 0.8f) {
                 Bee bee = new Bee(x,
@@ -127,6 +136,7 @@ public class World {
         updateBees(deltaTime);
         updateWingMen(deltaTime);
         updateCoins(deltaTime);
+        updateClouds(deltaTime);
         checkCollisions();
         checkGameOver();
         generateLevel();
@@ -197,6 +207,17 @@ public class World {
             Coin coin = iterator.next();
             coin.update(deltaTime);
             if (coin.position.y + Coin.COIN_HEIGHT < heightSoFar - WORLD_HEIGHT / 2) {
+                iterator.remove();
+            }
+        }
+    }
+
+    public void updateClouds(float deltaTime) {
+        Iterator<Cloud> iterator = clouds.iterator();
+        while (iterator.hasNext()) {
+            Cloud cloud = iterator.next();
+            cloud.update(deltaTime);
+            if (cloud.position.y + 1 < heightSoFar - WORLD_HEIGHT / 2) {
                 iterator.remove();
             }
         }
