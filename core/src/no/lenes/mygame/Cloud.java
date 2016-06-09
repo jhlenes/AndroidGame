@@ -7,7 +7,7 @@ public class Cloud extends DynamicGameObject {
     public static final float CLOUD_HEIGHT = 1.2f;
     public static final float CLOUD_WIDTH = 2f;
 
-    public static final float CLOUD_VELOCITY = 0.05f;
+    public static final float CLOUD_VELOCITY = 0.15f;
 
     int type = 1;
 

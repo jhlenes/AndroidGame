@@ -9,6 +9,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
+/**
+ * Please don't touch this hardcoded madness!!!
+ * At least be careful.
+ */
+
 public class Assets {
 
     public static Texture background;
@@ -54,8 +59,8 @@ public class Assets {
         );
         wingMan = new Animation(0.1f,
                 new TextureRegion(items, 0, 301, 174, 126),
-                new TextureRegion(items, 432, 178, 206, 107),
-                new TextureRegion(items, 0, 178, 216, 101),
+                new TextureRegion(items, 432, 179, 206, 107),
+                new TextureRegion(items, 0, 179, 216, 101),
                 new TextureRegion(items, 216, 178, 216, 101),
                 new TextureRegion(items, 783, 178, 182, 123),
                 new TextureRegion(items, 216, 178, 216, 101),

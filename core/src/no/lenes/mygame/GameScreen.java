@@ -14,36 +14,38 @@ import com.badlogic.gdx.math.Vector3;
 
 public class GameScreen extends ScreenAdapter {
 
-    static final int GAME_READY = 0;
-    static final int GAME_RUNNING = 1;
-    static final int GAME_PAUSED = 2;
-    static final int GAME_OVER = 3;
+    private static final int GAME_READY = 0;
+    private static final int GAME_RUNNING = 1;
+    private static final int GAME_PAUSED = 2;
+    private static final int GAME_OVER = 3;
 
-    MyGame game;
-    OrthographicCamera guiCam;
-    Vector3 touchPoint;
-    World world;
-    WorldRenderer renderer;
+    private MyGame game;
+    private OrthographicCamera guiCam;
+    private Vector3 touchPoint;
+    private World world;
+    private WorldRenderer renderer;
 
     // Will be used for sounds
-    World.WorldListener worldListener;
+    private World.WorldListener worldListener;
 
-    int lastScore;
-    int state;
+    private int lastScore;
+    private int state;
 
-    String scoreString;
+    private String scoreString;
 
-    float sizeX = 720;
-    float sizeY = 1280;
+    private static final float SIZE_X = 720;
+    private static final float SIZE_Y = 1280;
 
     public GameScreen(MyGame myGame) {
         this.game = myGame;
-
         state = GAME_READY;
-        guiCam = new OrthographicCamera(sizeX, sizeY);
-        guiCam.position.set(sizeX / 2, sizeY / 2, 0);
+
+        // Camera stuff
+        guiCam = new OrthographicCamera(SIZE_X, SIZE_Y);
+        guiCam.position.set(SIZE_X / 2, SIZE_Y / 2, 0);
         touchPoint = new Vector3();
 
+        // Used for sounds
         worldListener = new World.WorldListener() {
             @Override
             public void jump() {
@@ -66,14 +68,20 @@ public class GameScreen extends ScreenAdapter {
             }
         };
 
+        // Create the game world
         world = new World(worldListener);
+
+        // Create the thing that draws the world to the screen
         renderer = new WorldRenderer(game.batcher, world);
 
+        // Keep track of score
         lastScore = 0;
         scoreString = "SCORE: 0";
     }
 
     public void update(float deltaTime) {
+
+        // If it goes to long between frame updates, don't make too big changes
         if (deltaTime > 0.1f) {
             deltaTime = 0.1f;
         }
@@ -109,24 +117,27 @@ public class GameScreen extends ScreenAdapter {
 
         // should work also with Gdx.input.isPeripheralAvailable(Peripheral.Accelerometer)
         if (appType == Application.ApplicationType.Android) {
-            world.update(deltaTime, Gdx.input.getAccelerometerX());
-        } else {
+            world.update(deltaTime, Gdx.input.getAccelerometerX()); // Acceleration is between [-10, 10]
+        } else { // Desktop
             float accel = 0;
             if (Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT)) accel = 5f;
             if (Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT)) accel = -5f;
             world.update(deltaTime, accel);
         }
-        if (world.score != lastScore) {
+
+        if (world.score != lastScore) { // Don't update unless we have to
             lastScore = world.score;
             scoreString = "SCORE: " + lastScore;
         }
+
+        // Check if the game has ended
         if (world.state == World.WORLD_STATE_GAME_OVER) {
             state = GAME_OVER;
-            if (lastScore >= Settings.highscores[4])
+            if (Settings.addScore(lastScore)) {
                 scoreString = "NEW HIGHSCORE: " + lastScore;
-            else
+            } else {
                 scoreString = "SCORE: " + lastScore;
-            Settings.addScore(lastScore);
+            }
             Settings.save();
         }
     }
@@ -139,6 +150,7 @@ public class GameScreen extends ScreenAdapter {
 
     private void updateGameOver() {
         if (Gdx.input.justTouched()) {
+            // TODO: 09.06.2016 Instead of creating a new GameScreen, reset everything instead
             game.setScreen(new GameScreen(game));
         }
     }
@@ -158,7 +170,7 @@ public class GameScreen extends ScreenAdapter {
                 presentReady();
                 break;
             case GAME_RUNNING:
-                // drawBoundingBoxes();
+                //drawBoundingBoxes();
                 presentRunning();
                 break;
             case GAME_PAUSED:
@@ -171,6 +183,9 @@ public class GameScreen extends ScreenAdapter {
         game.batcher.end();
     }
 
+    /**
+     * Used for debugging
+     */
     private void drawBoundingBoxes() {
         game.batcher.end();
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -180,27 +195,27 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1, 0, 0, 0.5f);
         Rectangle rect = world.alien.bounds;
-        shapeRenderer.rect(rect.x * (sizeX / 9f), rect.y * (sizeY / 16f), rect.getWidth() * (sizeX / 9f), rect.getHeight() * (sizeY / 16f));
+        shapeRenderer.rect(rect.x * (SIZE_X / 9f), rect.y * (SIZE_Y / 16f), rect.getWidth() * (SIZE_X / 9f), rect.getHeight() * (SIZE_Y / 16f));
         try {
             rect = world.coins.get(0).bounds;
-        }catch (Exception e) {
+        } catch (Exception e) {
         }
-        shapeRenderer.rect(rect.x* (sizeX / 9f), rect.y* (sizeY / 16f), rect.getWidth()* (sizeX / 9f), rect.getHeight()* (sizeY / 16f));
+        shapeRenderer.rect(rect.x * (SIZE_X / 9f), rect.y * (SIZE_Y / 16f), rect.getWidth() * (SIZE_X / 9f), rect.getHeight() * (SIZE_Y / 16f));
         try {
             rect = world.platforms.get(4).bounds;
-        }catch (Exception e) {
+        } catch (Exception e) {
         }
-        shapeRenderer.rect(rect.x* (sizeX / 9f), rect.y* (sizeY / 16f), rect.getWidth()* (sizeX / 9f), rect.getHeight()* (sizeY / 16f));
+        shapeRenderer.rect(rect.x * (SIZE_X / 9f), rect.y * (SIZE_Y / 16f), rect.getWidth() * (SIZE_X / 9f), rect.getHeight() * (SIZE_Y / 16f));
         try {
             rect = world.bees.get(0).bounds;
-        }catch (Exception e) {
+        } catch (Exception e) {
         }
-        shapeRenderer.rect(rect.x* (sizeX / 9f), rect.y* (sizeY / 16f), rect.getWidth()* (sizeX / 9f), rect.getHeight()* (sizeY / 16f));
+        shapeRenderer.rect(rect.x * (SIZE_X / 9f), rect.y * (SIZE_Y / 16f), rect.getWidth() * (SIZE_X / 9f), rect.getHeight() * (SIZE_Y / 16f));
         try {
             rect = world.wingMen.get(0).bounds;
-        }catch (Exception e) {
+        } catch (Exception e) {
         }
-        shapeRenderer.rect(rect.x* (sizeX / 9f), rect.y* (sizeY / 16f), rect.getWidth()* (sizeX / 9f), rect.getHeight()* (sizeY / 16f));
+        shapeRenderer.rect(rect.x * (SIZE_X / 9f), rect.y * (SIZE_Y / 16f), rect.getWidth() * (SIZE_X / 9f), rect.getHeight() * (SIZE_Y / 16f));
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
         game.batcher.begin();
@@ -215,7 +230,7 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer.setProjectionMatrix(guiCam.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0, 0, 0, 0.7f);
-        shapeRenderer.rect(0, 0, sizeX, sizeY);
+        shapeRenderer.rect(0, 0, SIZE_X, SIZE_Y);
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
         game.batcher.begin();
@@ -232,27 +247,27 @@ public class GameScreen extends ScreenAdapter {
 
     private void presentReady() {
         shadeScreen();
-        Assets.menuFont.draw(game.batcher, "READY?", sizeX / 2 - readySize[0] / 2, sizeY / 2 - readySize[1] / 2);
+        Assets.menuFont.draw(game.batcher, "READY?", SIZE_X / 2 - readySize[0] / 2, SIZE_Y / 2 + readySize[1] / 2);
     }
 
     private void presentRunning() {
-        Assets.scoreFont.draw(game.batcher, scoreString, sizeX / (40f * (9f / 16f)), sizeY - sizeY / 40f);
+        Assets.scoreFont.draw(game.batcher, scoreString, SIZE_X / (40f * (9f / 16f)), SIZE_Y - SIZE_Y / 40f);
     }
 
     float[] pausedSize = getTextSize(Assets.menuFont, "PAUSED");
 
     private void presentPaused() {
         shadeScreen();
-        Assets.menuFont.draw(game.batcher, "PAUSED", sizeX / 2 - pausedSize[0] / 2, sizeY / 2 - pausedSize[1] / 2);
+        Assets.menuFont.draw(game.batcher, "PAUSED", SIZE_X / 2 - pausedSize[0] / 2, SIZE_Y / 2 + pausedSize[1] / 2);
     }
 
     float[] gameOverSize = getTextSize(Assets.menuFont, "GAME OVER!");
 
     private void presentGameOver() {
         shadeScreen();
-        Assets.menuFont.draw(game.batcher, "GAME OVER!", sizeX / 2 - gameOverSize[0] / 2, sizeY * 3f / 4 - gameOverSize[1] / 2);
+        Assets.menuFont.draw(game.batcher, "GAME OVER!", SIZE_X / 2 - gameOverSize[0] / 2, SIZE_Y * 3f / 4 + gameOverSize[1] / 2);
         float[] scoreTextSize = getTextSize(Assets.scoreFont, scoreString);
-        Assets.scoreFont.draw(game.batcher, scoreString, sizeX / 2 - scoreTextSize[0] / 2, sizeY / 2 - scoreTextSize[1] / 2);
+        Assets.scoreFont.draw(game.batcher, scoreString, SIZE_X / 2 - scoreTextSize[0] / 2, SIZE_Y / 2 + scoreTextSize[1] / 2);
     }
 
 

@@ -17,8 +17,8 @@ public class Alien extends DynamicGameObject {
     public static final float ALIEN_BOUNDSWIDTH = ALIEN_WIDTH * 0.7f;
     public static final float ALIEN_BOUNDSHEIGHT = ALIEN_HEIGHT;
 
-    int state;
-    float stateTime;
+    public int state;
+    public float stateTime;
 
     public Alien(float x, float y) {
         super(x, y, ALIEN_BOUNDSWIDTH, ALIEN_BOUNDSHEIGHT);

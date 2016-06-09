@@ -69,9 +69,7 @@ public class World {
         // The ground
         float y = Platform.PLATFORM_HEIGHT / 2;
         for (float x = Platform.PLATFORM_WIDTH / 2; x < WORLD_WIDTH + Platform.PLATFORM_WIDTH / 2; x += Platform.PLATFORM_WIDTH) {
-            Platform platform = new Platform(Platform.PLATFORM_TYPE_STATIC, x, y);
-            platform.scored = true;
-            platforms.add(platform);
+            platforms.add(new Platform(Platform.PLATFORM_TYPE_STATIC, x, y, true, false));
         }
         generatedHeight += MAX_JUMP_HEIGHT / 4 + rand.nextFloat() * 3;
         generateLevel();
@@ -95,6 +93,7 @@ public class World {
             if (rand.nextFloat() > 0.9f && platform.type != Platform.PLATFORM_TYPE_MOVING) {
                 Spring spring = new Spring(x, y + Platform.PLATFORM_HEIGHT / 2 + Spring.SPRING_HEIGHT / 2);
                 springs.add(spring);
+                platform.breakable = false;
             }
 
             // Add coins
@@ -105,7 +104,7 @@ public class World {
             }
 
             // Add clouds
-            if (y > WORLD_HEIGHT / 2 && rand.nextFloat() > 0.5) {
+            if (y > WORLD_HEIGHT / 2 && rand.nextFloat() > 0.4) {
                 Cloud cloud = new Cloud(MathUtils.random(1, 3), rand.nextFloat() * 4, y);
                 clouds.add(cloud);
             }
@@ -241,7 +240,7 @@ public class World {
                         platforms.remove(i);
                     }
                     alien.hitPlatform();
-                    if (rand.nextFloat() > 0.5f) {
+                    if (rand.nextFloat() > 0.5f && platform.breakable) {
                         platform.state = Platform.PLATFORM_STATE_BROKEN;
                     }
                     listener.jump();

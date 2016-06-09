@@ -16,11 +16,14 @@ public class Platform extends DynamicGameObject {
     public static final float PLATFORM_VELOCITY = 1.5f;
 
     // Points are scored when a platform is passed
-    boolean scored;
+    public boolean scored;
 
-    int type;
-    int state;
-    int orientation;
+    // Some platform should not break
+    public boolean breakable;
+
+    public int type;
+    public int state;
+    public int orientation;
 
     public Platform(int type, float x, float y) {
         super(x, y, PLATFORM_WIDTH, PLATFORM_HEIGHT);
@@ -30,7 +33,14 @@ public class Platform extends DynamicGameObject {
             velocity.x = PLATFORM_VELOCITY;
         }
         this.orientation = (new Random()).nextFloat() > 0.5 ? 1 : -1;
-        boolean scored = false;
+        scored = false;
+        breakable = true;
+    }
+
+    public Platform(int type, float x, float y, boolean scored, boolean breakable) {
+        this(type, x, y);
+        this.scored = scored;
+        this.breakable = breakable;
     }
 
     public void update(float deltaTime) {
