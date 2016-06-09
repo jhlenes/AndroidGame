@@ -35,8 +35,10 @@ public class Assets {
     public static TextureRegion cloud1;
     public static TextureRegion cloud2;
     public static TextureRegion cloud3;
+
     public static BitmapFont scoreFont;
     public static BitmapFont menuFont;
+    public static BitmapFont titleFont;
 
     public static Texture loadTexture(String file) {
         return new Texture(Gdx.files.internal(file));
@@ -89,11 +91,16 @@ public class Assets {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 80;
+        parameter.borderWidth = 2;
         menuFont = generator.generateFont(parameter);
         parameter.size = 40;
-        parameter.borderWidth = 2;
         parameter.borderColor = new Color(0f, 0f, 0f, 1f);
         scoreFont = generator.generateFont(parameter);
+        parameter.size = 100;
+        parameter.borderWidth = 5;
+        titleFont = generator.generateFont(parameter);
+
+
         generator.dispose();
     }
 
