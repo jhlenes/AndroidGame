@@ -59,22 +59,23 @@ public class GameScreen extends ScreenAdapter {
         worldListener = new World.WorldListener() {
             @Override
             public void jump() {
-                //Assets.playSound(Assets.jumpSound);
+                Assets.playSound(Assets.jumpSound);
             }
 
             @Override
             public void spring() {
-                //Assets.playSound(Assets.highJumpSound);
+                Assets.playSound(Assets.springSound);
             }
 
             @Override
             public void hit() {
-                //Assets.playSound(Assets.hitSound);
+                Assets.playSound(Assets.hurtSound);
+                Assets.pauseMusic();
             }
 
             @Override
             public void coin() {
-                //Assets.playSound(Assets.coinSound);
+                Assets.playSound(Assets.coinSound);
             }
         };
 
@@ -87,6 +88,9 @@ public class GameScreen extends ScreenAdapter {
         // Keep track of score
         lastScore = 0;
         scoreString = "SCORE: 0";
+
+        // Start music
+        Assets.playMusic();
     }
 
     public void update(float deltaTime) {
@@ -125,6 +129,7 @@ public class GameScreen extends ScreenAdapter {
             // Pause button
             if (touchPoint.y > SIZE_Y - PAUSE_BUTTON_SIZE && touchPoint.x > SIZE_X - PAUSE_BUTTON_SIZE) {
                 state = GAME_PAUSED;
+                Assets.pauseMusic();
             }
         }
 
@@ -154,12 +159,14 @@ public class GameScreen extends ScreenAdapter {
                 scoreString = "SCORE: " + lastScore;
             }
             Settings.save();
+            Assets.pauseMusic();
         }
     }
 
     private void updatePaused() {
         if (Gdx.input.justTouched()) {
             state = GAME_RUNNING;
+            Assets.playMusic();
         }
     }
 
@@ -314,6 +321,7 @@ public class GameScreen extends ScreenAdapter {
     public void pause() {
         if (state == GAME_RUNNING) {
             state = GAME_PAUSED;
+            Assets.pauseMusic();
         }
     }
 

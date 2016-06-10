@@ -1,6 +1,7 @@
 package no.lenes.mygame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+
+import java.util.Set;
 
 /**
  * Please don't touch this hardcoded madness!!!
@@ -48,6 +51,12 @@ public class Assets {
     public static BitmapFont scoreFont;
     public static BitmapFont menuFont;
     public static BitmapFont titleFont;
+
+    public static Music music;
+    public static Sound coinSound;
+    public static Sound jumpSound;
+    public static Sound springSound;
+    public static Sound hurtSound;
 
     public static Texture loadTexture(String file) {
         return new Texture(Gdx.files.internal(file));
@@ -116,13 +125,36 @@ public class Assets {
         parameter.size = 100;
         parameter.borderWidth = 5;
         titleFont = generator.generateFont(parameter);
-
-
         generator.dispose();
+
+        // Sounds and music
+        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3")); // Currently: Broke for free - Night Owl
+        music.setLooping(true);
+        music.setVolume(0.1f);
+        if (Settings.soundEnabled) {
+            music.play();
+        }
+        coinSound = Gdx.audio.newSound(Gdx.files.internal("coin.wav"));
+        hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.wav"));
+        jumpSound = Gdx.audio.newSound(Gdx.files.internal("jump.wav"));
+        springSound = Gdx.audio.newSound(Gdx.files.internal("spring.wav"));
     }
 
     public static void playSound(Sound sound) {
-        if (Settings.soundEnabled) sound.play(1);
+        if (Settings.soundEnabled) sound.play(0.2f);
     }
+
+    public static void playMusic() {
+        if (Settings.soundEnabled && !music.isPlaying()) {
+            music.play();
+        }
+    }
+
+    public static void pauseMusic() {
+        if (music.isPlaying()) {
+            music.pause();
+        }
+    }
+
 
 }

@@ -69,7 +69,7 @@ public class HighscoresScreen extends ScreenAdapter {
         // Render highscores
         float y = SIZE_Y * 4.5f / 7;
         for (int i = 0; i < Settings.highscores.length; i++) {
-            Assets.menuFont.draw(game.batcher, String.format("%2d. %d", (i + 1), Settings.highscores[i]), SIZE_X * 0.25f, y);
+            Assets.menuFont.draw(game.batcher, String.format("%d. %d", (i + 1), Settings.highscores[i]), SIZE_X * (i == 0 ? 0.29f : 0.25f), y);
             y -= Assets.menuFont.getLineHeight();
         }
 
@@ -77,5 +77,15 @@ public class HighscoresScreen extends ScreenAdapter {
         game.batcher.draw(Assets.backButton, 0, 0, BACK_BUTTON_WIDTH, BACK_BUTTON_HEIGHT);
 
         game.batcher.end();
+    }
+
+    @Override
+    public void pause() {
+        Assets.pauseMusic();
+    }
+
+    @Override
+    public void resume() {
+        Assets.playMusic();
     }
 }

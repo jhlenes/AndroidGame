@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import no.lenes.mygame.actors.Alien;
 import no.lenes.mygame.actors.Bee;
 import no.lenes.mygame.actors.Cloud;
 import no.lenes.mygame.actors.Coin;
@@ -34,13 +35,13 @@ public class World {
 
     public static final Vector2 GRAVITY = new Vector2(0, -12);
 
-    public final no.lenes.mygame.actors.Alien alien;
-    public List<no.lenes.mygame.actors.Platform> platforms;
-    public List<no.lenes.mygame.actors.Spring> springs;
-    public List<no.lenes.mygame.actors.Bee> bees;
-    public List<no.lenes.mygame.actors.WingMan> wingMen;
-    public List<no.lenes.mygame.actors.Coin> coins;
-    public List<no.lenes.mygame.actors.Cloud> clouds;
+    public final Alien alien;
+    public List<Platform> platforms;
+    public List<Spring> springs;
+    public List<Bee> bees;
+    public List<WingMan> wingMen;
+    public List<Coin> coins;
+    public List<Cloud> clouds;
 
     public final WorldListener listener;
     public final Random rand;
@@ -48,18 +49,23 @@ public class World {
     public float heightSoFar;
     public int score;
     public int state;
+    public float generatedHeight;
 
-    public static final float MAX_JUMP_HEIGHT = no.lenes.mygame.actors.Alien.ALIEN_JUMP_VELOCITY * no.lenes.mygame.actors.Alien.ALIEN_JUMP_VELOCITY / (2 * -GRAVITY.y);
-    float generatedHeight;
+    public static final float MAX_JUMP_HEIGHT = Alien.ALIEN_JUMP_VELOCITY * Alien.ALIEN_JUMP_VELOCITY / (2 * -GRAVITY.y);
+
+    public float WINGMAN_PROB = 1;
+    public float BEE_PROB = 1;
+    public float PLATFORM_MOVING_PROB = 0.8f;
+    public float PLATFORM_DISTANCE = MAX_JUMP_HEIGHT / 2;
 
     public World(WorldListener listener) {
-        this.alien = new no.lenes.mygame.actors.Alien(5, 2);
-        this.platforms = new ArrayList<no.lenes.mygame.actors.Platform>();
-        this.springs = new ArrayList<no.lenes.mygame.actors.Spring>();
-        this.bees = new ArrayList<no.lenes.mygame.actors.Bee>();
-        this.wingMen = new ArrayList<no.lenes.mygame.actors.WingMan>();
-        this.coins = new ArrayList<no.lenes.mygame.actors.Coin>();
-        this.clouds = new ArrayList<no.lenes.mygame.actors.Cloud>();
+        this.alien = new Alien(5, 2);
+        this.platforms = new ArrayList<Platform>();
+        this.springs = new ArrayList<Spring>();
+        this.bees = new ArrayList<Bee>();
+        this.wingMen = new ArrayList<WingMan>();
+        this.coins = new ArrayList<Coin>();
+        this.clouds = new ArrayList<Cloud>();
         this.listener = listener;
         rand = new Random();
 
@@ -74,9 +80,9 @@ public class World {
     private void generateBeginning() {
 
         // The ground
-        float y = no.lenes.mygame.actors.Platform.PLATFORM_HEIGHT / 2;
-        for (float x = no.lenes.mygame.actors.Platform.PLATFORM_WIDTH / 2; x < WORLD_WIDTH + no.lenes.mygame.actors.Platform.PLATFORM_WIDTH / 2; x += no.lenes.mygame.actors.Platform.PLATFORM_WIDTH) {
-            platforms.add(new no.lenes.mygame.actors.Platform(no.lenes.mygame.actors.Platform.PLATFORM_TYPE_STATIC, x, y, true, false));
+        float y = Platform.PLATFORM_HEIGHT / 2;
+        for (float x = Platform.PLATFORM_WIDTH / 2; x < WORLD_WIDTH + Platform.PLATFORM_WIDTH / 2; x += Platform.PLATFORM_WIDTH) {
+            platforms.add(new Platform(Platform.PLATFORM_TYPE_STATIC, x, y, true, false));
         }
         generatedHeight += MAX_JUMP_HEIGHT / 4 + rand.nextFloat() * 3;
         generateLevel();
@@ -91,47 +97,66 @@ public class World {
         while (y < heightSoFar + WORLD_HEIGHT) {
 
             // Add platforms
-            int type = rand.nextFloat() > 0.8f ? no.lenes.mygame.actors.Platform.PLATFORM_TYPE_MOVING : no.lenes.mygame.actors.Platform.PLATFORM_TYPE_STATIC;
-            float x = rand.nextFloat() * (WORLD_WIDTH - no.lenes.mygame.actors.Platform.PLATFORM_WIDTH) + no.lenes.mygame.actors.Platform.PLATFORM_WIDTH / 2;
-            no.lenes.mygame.actors.Platform platform = new no.lenes.mygame.actors.Platform(type, x, y);
+            int type = rand.nextFloat() > PLATFORM_MOVING_PROB ? Platform.PLATFORM_TYPE_MOVING : Platform.PLATFORM_TYPE_STATIC;
+            float x = rand.nextFloat() * (WORLD_WIDTH - Platform.PLATFORM_WIDTH) + Platform.PLATFORM_WIDTH / 2;
+            Platform platform = new Platform(type, x, y);
             platforms.add(platform);
 
             // Add springs
-            if (rand.nextFloat() > 0.9f && platform.type != no.lenes.mygame.actors.Platform.PLATFORM_TYPE_MOVING) {
-                no.lenes.mygame.actors.Spring spring = new no.lenes.mygame.actors.Spring(x, y + no.lenes.mygame.actors.Platform.PLATFORM_HEIGHT / 2 + no.lenes.mygame.actors.Spring.SPRING_HEIGHT / 2);
+            if (rand.nextFloat() > 0.9f && platform.type != Platform.PLATFORM_TYPE_MOVING) {
+                Spring spring = new Spring(x, y + Platform.PLATFORM_HEIGHT / 2 + Spring.SPRING_HEIGHT / 2);
                 springs.add(spring);
                 platform.breakable = false;
             }
 
             // Add coins
             if (rand.nextFloat() > 0.6f) {
-                no.lenes.mygame.actors.Coin coin = new no.lenes.mygame.actors.Coin(x + rand.nextFloat() * 3,
-                        y + no.lenes.mygame.actors.Platform.PLATFORM_HEIGHT / 2 + no.lenes.mygame.actors.Coin.COIN_HEIGHT / 2 + rand.nextFloat() * 3);
+                float coinX = x + rand.nextFloat() * WORLD_WIDTH / 4 * (rand.nextFloat() > 0.5f ? -1 : 1);
+                if (coinX < Coin.COIN_WIDTH) {
+                    coinX = Coin.COIN_WIDTH / 2;
+                } else if (coinX > WORLD_WIDTH - Coin.COIN_WIDTH / 2) {
+                    coinX = WORLD_WIDTH - Coin.COIN_WIDTH / 2;
+                }
+                Coin coin = new Coin(coinX,
+                        y + Platform.PLATFORM_HEIGHT / 2 + Coin.COIN_HEIGHT / 2 + rand.nextFloat() * 3);
                 coins.add(coin);
             }
 
             // Add clouds
             if (y > WORLD_HEIGHT / 2 && rand.nextFloat() > 0.4) {
-                no.lenes.mygame.actors.Cloud cloud = new no.lenes.mygame.actors.Cloud(MathUtils.random(1, 3), rand.nextFloat() * 4, y);
+                Cloud cloud = new Cloud(MathUtils.random(1, 3), rand.nextFloat() * 4, y);
                 clouds.add(cloud);
             }
 
             // Add bees
-            if (y > WORLD_HEIGHT * 2 && rand.nextFloat() > 0.8f) {
-                no.lenes.mygame.actors.Bee bee = new no.lenes.mygame.actors.Bee(x,
-                        y + no.lenes.mygame.actors.Platform.PLATFORM_HEIGHT / 2 + no.lenes.mygame.actors.Bee.BEE_HEIGHT / 2 + rand.nextFloat() * 3);
+            if (rand.nextFloat() > BEE_PROB) {
+                Bee bee = new Bee(x,
+                        y + Platform.PLATFORM_HEIGHT / 2 + Bee.BEE_HEIGHT / 2 + rand.nextFloat() * 3);
                 bees.add(bee);
             }
 
             // Add wingmen
-            if (y > WORLD_HEIGHT * 4 && rand.nextFloat() > 0.9f) {
-                no.lenes.mygame.actors.WingMan wingMan = new no.lenes.mygame.actors.WingMan(x,
-                        y + no.lenes.mygame.actors.Platform.PLATFORM_HEIGHT / 2 + no.lenes.mygame.actors.WingMan.WINGMAN_HEIGHT / 2 + rand.nextFloat() * 3);
+            if (rand.nextFloat() > WINGMAN_PROB) {
+                WingMan wingMan = new WingMan(x,
+                        y + Platform.PLATFORM_HEIGHT / 2 + WingMan.WINGMAN_HEIGHT / 2 + rand.nextFloat() * 3);
                 wingMen.add(wingMan);
             }
 
+            // Make game harder with progression
+            if (y > WORLD_HEIGHT * 2) {
+                BEE_PROB = 0.8f;
+                PLATFORM_DISTANCE = WORLD_HEIGHT / 3;
+            }
+            if (y > WORLD_HEIGHT * 4) {
+                WINGMAN_PROB = 0.9f;
+                PLATFORM_MOVING_PROB = 0.8f;
+            }
+            if (y > WORLD_HEIGHT * 5) {
+                PLATFORM_DISTANCE = WORLD_HEIGHT / 4;
+            }
+
             y += MAX_JUMP_HEIGHT - 0.5f;
-            y -= rand.nextFloat() * (MAX_JUMP_HEIGHT / 3);
+            y -= rand.nextFloat() * PLATFORM_DISTANCE;
         }
         generatedHeight = y;
     }
@@ -151,13 +176,13 @@ public class World {
     private void updateAlien(float deltaTime, float accelX) {
 
         // Alien can't die at the very beginning
-        if (alien.position.y <= no.lenes.mygame.actors.Platform.PLATFORM_HEIGHT + no.lenes.mygame.actors.Alien.ALIEN_HEIGHT / 2) {
+        if (alien.position.y <= Platform.PLATFORM_HEIGHT + Alien.ALIEN_HEIGHT / 2) {
             alien.hitPlatform();
-            alien.position.y = no.lenes.mygame.actors.Platform.PLATFORM_HEIGHT + no.lenes.mygame.actors.Alien.ALIEN_HEIGHT / 2;
+            alien.position.y = Platform.PLATFORM_HEIGHT + Alien.ALIEN_HEIGHT / 2;
         }
 
         // Alien's x-velocity is determined by accelerometer
-        alien.velocity.x = -accelX / 10 * no.lenes.mygame.actors.Alien.ALIEN_MOVE_VELOCITY; // accelZ ranges between [-10,10]
+        alien.velocity.x = -accelX / 10 * Alien.ALIEN_MOVE_VELOCITY; // accelZ ranges between [-10,10]
 
         alien.update(deltaTime);
 
@@ -168,12 +193,12 @@ public class World {
 
     // TODO: 06.06.2016 Check if removal is working properly
     private void updatePlatforms(float deltaTime) {
-        Iterator<no.lenes.mygame.actors.Platform> iterator = platforms.iterator();
+        Iterator<Platform> iterator = platforms.iterator();
         while (iterator.hasNext()) {
-            no.lenes.mygame.actors.Platform platform = iterator.next();
+            Platform platform = iterator.next();
             platform.update(deltaTime);
 
-            if (platform.position.y + no.lenes.mygame.actors.Platform.PLATFORM_HEIGHT < heightSoFar - WORLD_HEIGHT / 2) {
+            if (platform.position.y + Platform.PLATFORM_HEIGHT < heightSoFar - WORLD_HEIGHT / 2) {
                 iterator.remove();
             }
             if (platform.position.y < alien.position.y && !platform.scored) {
@@ -186,9 +211,9 @@ public class World {
 
     private void updateBees(float deltaTime) {
 
-        Iterator<no.lenes.mygame.actors.Bee> iterator = bees.iterator();
+        Iterator<Bee> iterator = bees.iterator();
         while (iterator.hasNext()) {
-            no.lenes.mygame.actors.Bee bee = iterator.next();
+            Bee bee = iterator.next();
             bee.update(deltaTime);
             if (bee.position.y + Bee.BEE_HEIGHT < heightSoFar - WORLD_HEIGHT / 2) {
                 iterator.remove();
@@ -197,9 +222,9 @@ public class World {
     }
 
     private void updateWingMen(float deltaTime) {
-        Iterator<no.lenes.mygame.actors.WingMan> iterator = wingMen.iterator();
+        Iterator<WingMan> iterator = wingMen.iterator();
         while (iterator.hasNext()) {
-            no.lenes.mygame.actors.WingMan wingMan = iterator.next();
+            WingMan wingMan = iterator.next();
             wingMan.update(deltaTime);
             if (wingMan.position.y + WingMan.WINGMAN_HEIGHT < heightSoFar - WORLD_HEIGHT / 2) {
                 iterator.remove();
@@ -208,18 +233,18 @@ public class World {
     }
 
     private void updateCoins(float deltaTime) {
-        Iterator<no.lenes.mygame.actors.Coin> iterator = coins.iterator();
+        Iterator<Coin> iterator = coins.iterator();
         while (iterator.hasNext()) {
-            no.lenes.mygame.actors.Coin coin = iterator.next();
+            Coin coin = iterator.next();
             coin.update(deltaTime);
-            if (coin.position.y + no.lenes.mygame.actors.Coin.COIN_HEIGHT < heightSoFar - WORLD_HEIGHT / 2) {
+            if (coin.position.y + Coin.COIN_HEIGHT < heightSoFar - WORLD_HEIGHT / 2) {
                 iterator.remove();
             }
         }
     }
 
     public void updateClouds(float deltaTime) {
-        Iterator<no.lenes.mygame.actors.Cloud> iterator = clouds.iterator();
+        Iterator<Cloud> iterator = clouds.iterator();
         while (iterator.hasNext()) {
             Cloud cloud = iterator.next();
             cloud.update(deltaTime);
@@ -236,14 +261,14 @@ public class World {
     }
 
     private void checkPlatformCollisions() {
-        if (alien.velocity.y > 0 || alien.state == no.lenes.mygame.actors.Alien.ALIEN_STATE_HIT) {
+        if (alien.velocity.y > 0 || alien.state == Alien.ALIEN_STATE_HIT) {
             return;
         }
         for (int i = 0; i < platforms.size(); i++) {
-            no.lenes.mygame.actors.Platform platform = platforms.get(i);
+            Platform platform = platforms.get(i);
             if (alien.position.y > platform.position.y) {
                 if (alien.bounds.overlaps(platform.bounds)) {
-                    if (platform.state == no.lenes.mygame.actors.Platform.PLATFORM_STATE_BROKEN) {
+                    if (platform.state == Platform.PLATFORM_STATE_BROKEN) {
                         platforms.remove(i);
                     }
                     alien.hitPlatform();
@@ -259,7 +284,7 @@ public class World {
 
     private void checkEnemyCollisions() {
 
-        if (alien.state == no.lenes.mygame.actors.Alien.ALIEN_STATE_HIT) {
+        if (alien.state == Alien.ALIEN_STATE_HIT) {
             return;
         }
 
@@ -282,7 +307,7 @@ public class World {
 
     private void checkItemCollisions() {
 
-        if (alien.state == no.lenes.mygame.actors.Alien.ALIEN_STATE_HIT) {
+        if (alien.state == Alien.ALIEN_STATE_HIT) {
             return;
         }
 
@@ -298,8 +323,8 @@ public class World {
         // Springs
         if (alien.velocity.y > 0) return;
         for (int i = 0; i < springs.size(); i++) {
-            no.lenes.mygame.actors.Spring spring = springs.get(i);
-            if (spring.state == no.lenes.mygame.actors.Spring.STATE_IN && alien.position.y > spring.position.y) {
+            Spring spring = springs.get(i);
+            if (spring.state == Spring.STATE_IN && alien.position.y > spring.position.y) {
                 if (alien.bounds.overlaps(spring.bounds)) {
                     alien.hitSpring();
                     spring.state = Spring.STATE_OUT;
@@ -313,6 +338,7 @@ public class World {
     private void checkGameOver() {
         if (alien.position.y < heightSoFar - WORLD_HEIGHT / 2) {
             state = WORLD_STATE_GAME_OVER;
+            listener.hit();
         }
     }
 

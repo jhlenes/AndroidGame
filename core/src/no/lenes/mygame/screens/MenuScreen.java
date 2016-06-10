@@ -30,6 +30,7 @@ public class MenuScreen extends ScreenAdapter {
         guiCam = new OrthographicCamera(SIZE_X, SIZE_Y);
         guiCam.position.set(SIZE_X / 2, SIZE_Y / 2, 0);
         touchPoint = new Vector3();
+        Assets.playMusic();
     }
 
     @Override
@@ -57,6 +58,11 @@ public class MenuScreen extends ScreenAdapter {
             // Mute button
             if (touchPoint.y > SIZE_Y - SOUND_BUTTON_HEIGHT && touchPoint.x > SIZE_X - SOUND_BUTTON_WIDTH) {
                 Settings.soundEnabled = Settings.soundEnabled ? false : true;
+                if (Settings.soundEnabled) {
+                    Assets.music.play();
+                } else {
+                    Assets.music.pause();
+                }
             }
 
         }
@@ -98,6 +104,17 @@ public class MenuScreen extends ScreenAdapter {
         }
 
         game.batcher.end();
+    }
+
+    @Override
+    public void pause() {
+        Assets.pauseMusic();
+    }
+
+
+    @Override
+    public void resume() {
+        Assets.playMusic();
     }
 
 }

@@ -4,7 +4,7 @@ public class Coin extends GameObject {
 
     public static final float COIN_HEIGHT = 0.7f;
     public static final float COIN_WIDTH = 0.7f;
-    public static final int COIN_SCORE = 10;
+    public static final int COIN_SCORE = 5;
 
     public static final float COIN_BOUNDSWIDTH = COIN_WIDTH * 0.8f;
     public static final float COIN_BOUNDSHEIGHT = COIN_HEIGHT * 0.8f;
