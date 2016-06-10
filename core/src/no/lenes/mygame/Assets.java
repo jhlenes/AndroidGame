@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
@@ -17,6 +18,14 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 public class Assets {
 
     public static Texture background;
+
+    public static TextureAtlas uicontrols;
+    public static TextureRegion soundOnButton;
+    public static TextureRegion soundOffButton;
+    public static TextureRegion pauseButton;
+    public static TextureRegion backButton;
+    public static TextureRegion acceptButton;
+    public static TextureRegion declineButton;
 
     public static Texture items;
     public static TextureRegion alienFront;
@@ -46,6 +55,14 @@ public class Assets {
 
     public static void load() {
         background = loadTexture("background.png");
+
+        uicontrols = new TextureAtlas("uicontrols.txt");
+        soundOffButton = uicontrols.findRegion("sound_off");
+        soundOnButton = uicontrols.findRegion("sound_on");
+        pauseButton = uicontrols.findRegion("pause");
+        backButton = uicontrols.findRegion("back");
+        acceptButton = uicontrols.findRegion("accept");
+        declineButton = uicontrols.findRegion("decline");
 
         items = loadTexture("items.png");
         alienFront = new TextureRegion(items, 430, 301, 104, 149);

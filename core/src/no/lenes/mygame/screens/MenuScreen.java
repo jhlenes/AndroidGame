@@ -7,8 +7,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector3;
 
+import java.util.Set;
+
 import no.lenes.mygame.Assets;
 import no.lenes.mygame.MyGame;
+import no.lenes.mygame.Settings;
 
 public class MenuScreen extends ScreenAdapter {
 
@@ -18,6 +21,9 @@ public class MenuScreen extends ScreenAdapter {
 
     private static final float SIZE_X = 720;
     private static final float SIZE_Y = 1280;
+
+    private static final float SOUND_BUTTON_WIDTH = SIZE_X / 10;
+    private static final float SOUND_BUTTON_HEIGHT = SIZE_X / 10;
 
     public MenuScreen(MyGame game) {
         this.game = game;
@@ -47,6 +53,12 @@ public class MenuScreen extends ScreenAdapter {
             if (touchPoint.y >= SIZE_Y * 4f / 7f - 2 * Assets.menuFont.getLineHeight() && touchPoint.y <= SIZE_Y * 4f / 7f - Assets.menuFont.getLineHeight()) {
                 game.setScreen(new HighscoresScreen(game));
             }
+
+            // Mute button
+            if (touchPoint.y > SIZE_Y - SOUND_BUTTON_HEIGHT && touchPoint.x > SIZE_X - SOUND_BUTTON_WIDTH) {
+                Settings.soundEnabled = Settings.soundEnabled ? false : true;
+            }
+
         }
 
     }
@@ -76,6 +88,14 @@ public class MenuScreen extends ScreenAdapter {
 
         layout.setText(Assets.menuFont, "HIGHSCORES");
         Assets.menuFont.draw(game.batcher, "HIGHSCORES", SIZE_X / 2 - layout.width / 2, SIZE_Y * 4f / 7f - Assets.menuFont.getLineHeight());
+
+        // Mute button
+
+        if (Settings.soundEnabled) {
+            game.batcher.draw(Assets.soundOnButton, SIZE_X - SOUND_BUTTON_WIDTH, SIZE_Y - SOUND_BUTTON_HEIGHT, SOUND_BUTTON_WIDTH, SOUND_BUTTON_HEIGHT);
+        } else {
+            game.batcher.draw(Assets.soundOffButton, SIZE_X - SOUND_BUTTON_WIDTH, SIZE_Y - SOUND_BUTTON_HEIGHT, SOUND_BUTTON_WIDTH, SOUND_BUTTON_HEIGHT);
+        }
 
         game.batcher.end();
     }

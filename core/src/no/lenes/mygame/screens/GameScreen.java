@@ -42,6 +42,10 @@ public class GameScreen extends ScreenAdapter {
     private static final float SIZE_X = 720;
     private static final float SIZE_Y = 1280;
 
+    private static final float PAUSE_BUTTON_SIZE = SIZE_X / 10;
+    private static final float ACCEPT_BUTTON_SIZE = SIZE_X / 5;
+
+
     public GameScreen(MyGame myGame) {
         this.game = myGame;
         state = GAME_READY;
@@ -117,6 +121,11 @@ public class GameScreen extends ScreenAdapter {
     private void updateRunning(float deltaTime) {
         if (Gdx.input.justTouched()) {
             guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+
+            // Pause button
+            if (touchPoint.y > SIZE_Y - PAUSE_BUTTON_SIZE && touchPoint.x > SIZE_X - PAUSE_BUTTON_SIZE) {
+                state = GAME_PAUSED;
+            }
         }
 
         Application.ApplicationType appType = Gdx.app.getType();
@@ -156,8 +165,18 @@ public class GameScreen extends ScreenAdapter {
 
     private void updateGameOver() {
         if (Gdx.input.justTouched()) {
-            // TODO: 09.06.2016 Instead of creating a new GameScreen, reset everything instead
-            game.setScreen(new GameScreen(game));
+            guiCam.unproject(touchPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0));
+
+            if (touchPoint.y > SIZE_Y / 2 - 2 * ACCEPT_BUTTON_SIZE && touchPoint.y < SIZE_Y / 2 - ACCEPT_BUTTON_SIZE) {
+
+                //Play again
+                if (touchPoint.x > SIZE_X / 3 - ACCEPT_BUTTON_SIZE / 2 && touchPoint.x < SIZE_X / 3 + ACCEPT_BUTTON_SIZE / 2) {
+                    // TODO: 09.06.2016 Instead of creating a new GameScreen, reset everything instead
+                    game.setScreen(new GameScreen(game));
+                } else if (touchPoint.x > SIZE_X * 2f / 3 - ACCEPT_BUTTON_SIZE / 2 && touchPoint.x < SIZE_X * 2f / 3 + ACCEPT_BUTTON_SIZE / 2) {
+                    game.setScreen(new MenuScreen(game));
+                }
+            }
         }
     }
 
@@ -258,6 +277,7 @@ public class GameScreen extends ScreenAdapter {
 
     private void presentRunning() {
         Assets.scoreFont.draw(game.batcher, scoreString, SIZE_X / (40f * (9f / 16f)), SIZE_Y - SIZE_Y / 40f);
+        game.batcher.draw(Assets.pauseButton, SIZE_X - PAUSE_BUTTON_SIZE, SIZE_Y - PAUSE_BUTTON_SIZE, PAUSE_BUTTON_SIZE, PAUSE_BUTTON_SIZE);
     }
 
     float[] pausedSize = getTextSize(Assets.menuFont, "PAUSED");
@@ -272,8 +292,15 @@ public class GameScreen extends ScreenAdapter {
     private void presentGameOver() {
         shadeScreen();
         Assets.menuFont.draw(game.batcher, "GAME OVER!", SIZE_X / 2 - gameOverSize[0] / 2, SIZE_Y * 3f / 4 + gameOverSize[1] / 2);
-        float[] scoreTextSize = getTextSize(Assets.scoreFont, scoreString);
-        Assets.scoreFont.draw(game.batcher, scoreString, SIZE_X / 2 - scoreTextSize[0] / 2, SIZE_Y / 2 + scoreTextSize[1] / 2);
+        float[] textSize = getTextSize(Assets.scoreFont, scoreString);
+        Assets.scoreFont.draw(game.batcher, scoreString, SIZE_X / 2 - textSize[0] / 2, SIZE_Y * 3f / 4 - gameOverSize[1]);
+
+        textSize = getTextSize(Assets.menuFont, "PLAY AGAIN?");
+        Assets.menuFont.draw(game.batcher, "PLAY AGAIN?", SIZE_X / 2 - textSize[0] / 2, SIZE_Y / 2);
+
+        // Draw accept and decline buttons
+        game.batcher.draw(Assets.acceptButton, SIZE_X / 3 - ACCEPT_BUTTON_SIZE / 2, SIZE_Y / 2 - 2 * ACCEPT_BUTTON_SIZE, ACCEPT_BUTTON_SIZE, ACCEPT_BUTTON_SIZE);
+        game.batcher.draw(Assets.declineButton, SIZE_X * 2f / 3 - ACCEPT_BUTTON_SIZE / 2, SIZE_Y / 2 - 2 * ACCEPT_BUTTON_SIZE, ACCEPT_BUTTON_SIZE, ACCEPT_BUTTON_SIZE);
     }
 
 
