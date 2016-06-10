@@ -1,4 +1,6 @@
-package no.lenes.mygame;
+package no.lenes.mygame.actors;
+
+import no.lenes.mygame.World;
 
 public class Bee extends DynamicGameObject {
 
@@ -9,7 +11,7 @@ public class Bee extends DynamicGameObject {
     public static final float BEE_BOUNDSWIDTH = BEE_WIDTH * 0.8f;
     public static final float BEE_BOUNDSHEIGHT = BEE_HEIGHT * 0.7f;
 
-    float stateTime;
+    public float stateTime;
 
     public Bee(float x, float y) {
         super(x, y, BEE_BOUNDSWIDTH, BEE_BOUNDSHEIGHT);

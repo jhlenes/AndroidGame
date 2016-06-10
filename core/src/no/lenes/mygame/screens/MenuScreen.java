@@ -1,4 +1,4 @@
-package no.lenes.mygame;
+package no.lenes.mygame.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector3;
+
+import no.lenes.mygame.Assets;
+import no.lenes.mygame.MyGame;
 
 public class MenuScreen extends ScreenAdapter {
 
@@ -39,6 +42,11 @@ public class MenuScreen extends ScreenAdapter {
             if (touchPoint.y >= SIZE_Y * 4f / 7f - Assets.menuFont.getLineHeight() && touchPoint.y <= SIZE_Y * 4f / 7f) {
                 game.setScreen(new GameScreen(game));
             }
+
+            // Highscores button
+            if (touchPoint.y >= SIZE_Y * 4f / 7f - 2 * Assets.menuFont.getLineHeight() && touchPoint.y <= SIZE_Y * 4f / 7f - Assets.menuFont.getLineHeight()) {
+                game.setScreen(new HighscoresScreen(game));
+            }
         }
 
     }
@@ -55,7 +63,8 @@ public class MenuScreen extends ScreenAdapter {
         game.batcher.begin();
 
         // It was easier to move parts of the image outside of the screen than to crop it in photo editing software
-        game.batcher.draw(Assets.background, 0, -4f / 9f * SIZE_X, 13f / 16f * SIZE_Y , SIZE_Y);
+        game.batcher.draw(Assets.background, 0, -4f / 9f * SIZE_X, 13f / 16f * SIZE_Y, SIZE_Y);
+        game.batcher.draw(Assets.alienJump, SIZE_X / 2 - SIZE_X / 12, SIZE_Y / 4, 0, 0, SIZE_X / 6, SIZE_Y / 6, 1, 1, 0);
 
         GlyphLayout layout = new GlyphLayout(Assets.titleFont, "Martian");
         Assets.titleFont.draw(game.batcher, "Martian", SIZE_X / 2 - layout.width / 2, SIZE_Y * 5f / 6f);
@@ -64,6 +73,7 @@ public class MenuScreen extends ScreenAdapter {
 
         layout.setText(Assets.menuFont, "PLAY");
         Assets.menuFont.draw(game.batcher, "PLAY", SIZE_X / 2 - layout.width / 2, SIZE_Y * 4f / 7f);
+
         layout.setText(Assets.menuFont, "HIGHSCORES");
         Assets.menuFont.draw(game.batcher, "HIGHSCORES", SIZE_X / 2 - layout.width / 2, SIZE_Y * 4f / 7f - Assets.menuFont.getLineHeight());
 

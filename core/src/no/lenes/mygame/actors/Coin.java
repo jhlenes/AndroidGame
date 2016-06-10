@@ -1,4 +1,4 @@
-package no.lenes.mygame;
+package no.lenes.mygame.actors;
 
 public class Coin extends GameObject {
 
@@ -9,7 +9,7 @@ public class Coin extends GameObject {
     public static final float COIN_BOUNDSWIDTH = COIN_WIDTH * 0.8f;
     public static final float COIN_BOUNDSHEIGHT = COIN_HEIGHT * 0.8f;
 
-    float stateTime;
+    public float stateTime;
 
     public Coin(float x, float y) {
         super(x, y, COIN_BOUNDSWIDTH, COIN_BOUNDSHEIGHT);

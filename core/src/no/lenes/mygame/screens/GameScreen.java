@@ -1,4 +1,4 @@
-package no.lenes.mygame;
+package no.lenes.mygame.screens;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
@@ -11,6 +11,12 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+
+import no.lenes.mygame.Assets;
+import no.lenes.mygame.MyGame;
+import no.lenes.mygame.Settings;
+import no.lenes.mygame.World;
+import no.lenes.mygame.WorldRenderer;
 
 public class GameScreen extends ScreenAdapter {
 

@@ -1,4 +1,4 @@
-package no.lenes.mygame;
+package no.lenes.mygame.actors;
 
 import java.util.Random;
 
@@ -9,7 +9,7 @@ public class Cloud extends DynamicGameObject {
 
     public static final float CLOUD_VELOCITY = 0.15f;
 
-    int type = 1;
+    public int type = 1;
 
     public Cloud(int type, float x, float y) {
         super(x, y, CLOUD_WIDTH, CLOUD_HEIGHT);

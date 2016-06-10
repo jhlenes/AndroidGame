@@ -1,6 +1,8 @@
-package no.lenes.mygame;
+package no.lenes.mygame.actors;
 
 import java.util.Random;
+
+import no.lenes.mygame.*;
 
 public class Platform extends DynamicGameObject {
 

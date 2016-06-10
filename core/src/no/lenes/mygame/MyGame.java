@@ -2,11 +2,12 @@ package no.lenes.mygame;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import no.lenes.mygame.screens.*;
 
 public class MyGame extends Game {
 
     // This is used by all screens
-    SpriteBatch batcher;
+    public SpriteBatch batcher;
 
     @Override
     public void create() {

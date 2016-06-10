@@ -1,4 +1,4 @@
-package no.lenes.mygame;
+package no.lenes.mygame.actors;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;

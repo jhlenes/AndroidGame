@@ -1,5 +1,7 @@
-package no.lenes.mygame;
+package no.lenes.mygame.actors;
 
+
+import no.lenes.mygame.World;
 
 public class Alien extends DynamicGameObject {
 

@@ -1,4 +1,6 @@
-package no.lenes.mygame;
+package no.lenes.mygame.actors;
+
+import no.lenes.mygame.*;
 
 public class WingMan extends DynamicGameObject {
 
@@ -10,7 +12,7 @@ public class WingMan extends DynamicGameObject {
 
     public static final float WINGMAN_VELOCITY = 2.5f;
 
-    float stateTime;
+    public float stateTime;
 
     public WingMan(float x, float y) {
         super(x, y, WINGMAN_BOUNDSWIDTH, WINGMAN_BOUNDSHEIGHT);
