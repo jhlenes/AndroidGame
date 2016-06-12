@@ -86,8 +86,8 @@ public class MenuScreen extends ScreenAdapter {
 
         GlyphLayout layout = new GlyphLayout(Assets.titleFont, "Martian");
         Assets.titleFont.draw(game.batcher, "Martian", SIZE_X / 2 - layout.width / 2, SIZE_Y * 5f / 6f);
-        layout.setText(Assets.titleFont, "Escape!");
-        Assets.titleFont.draw(game.batcher, "Escape!", SIZE_X / 2 - layout.width / 2f, SIZE_Y * 5f / 6f - 1.5f * layout.height);
+        layout.setText(Assets.titleFont, "Escape");
+        Assets.titleFont.draw(game.batcher, "Escape", SIZE_X / 2 - layout.width / 2f, SIZE_Y * 5f / 6f - 1.5f * layout.height);
 
         layout.setText(Assets.menuFont, "PLAY");
         Assets.menuFont.draw(game.batcher, "PLAY", SIZE_X / 2 - layout.width / 2, SIZE_Y * 4f / 7f);
@@ -109,6 +109,7 @@ public class MenuScreen extends ScreenAdapter {
     @Override
     public void pause() {
         Assets.pauseMusic();
+        Settings.save();
     }
 
 

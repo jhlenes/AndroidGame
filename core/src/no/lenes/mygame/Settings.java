@@ -1,39 +1,45 @@
 package no.lenes.mygame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 
 public class Settings {
 
     public static boolean soundEnabled = true;
     public static int[] highscores = new int[]{0, 0, 0, 0, 0};
-    public final static String file = ".mygame";
+
+    /**
+     * So little data is being stored, therefore everything is stored in the preferences
+     */
+    public final static Preferences prefs = Gdx.app.getPreferences("prefs");
 
     public static void load() {
-        try {
-            FileHandle filehandle = Gdx.files.external(file);
 
-            String[] strings = filehandle.readString().split("\n");
+        if (prefs.contains("soundEnabled")) { // Not the first time opening app
 
-            soundEnabled = Boolean.parseBoolean(strings[0]);
-            for (int i = 0; i < 5; i++) {
-                highscores[i] = Integer.parseInt(strings[i + 1]);
+            // Sound setting
+            soundEnabled = prefs.getBoolean("soundEnabled");
+
+            // Highscores
+            for (int i = 0; i < highscores.length; i++) {
+                highscores[i] = prefs.getInteger("highscore" + i);
             }
-        } catch (Throwable e) {
-            // :( It's ok we have defaults
         }
     }
 
-    public static void save() {
-        try {
-            FileHandle filehandle = Gdx.files.external(file);
 
-            filehandle.writeString(Boolean.toString(soundEnabled) + "\n", false);
-            for (int i = 0; i < 5; i++) {
-                filehandle.writeString(Integer.toString(highscores[i]) + "\n", true);
-            }
-        } catch (Throwable e) {
+    public static void save() {
+
+        // Sound setting
+        prefs.putBoolean("soundEnabled", soundEnabled);
+
+        // Highscores
+        for (int i = 0; i < highscores.length; i++) {
+            prefs.putInteger("highscore" + i, highscores[i]);
         }
+
+        prefs.flush();
     }
 
     public static boolean addScore(int score) {

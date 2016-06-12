@@ -154,11 +154,11 @@ public class GameScreen extends ScreenAdapter {
         if (world.state == World.WORLD_STATE_GAME_OVER) {
             state = GAME_OVER;
             if (Settings.addScore(lastScore)) {
+                Settings.save();
                 scoreString = "NEW HIGHSCORE: " + lastScore;
             } else {
                 scoreString = "SCORE: " + lastScore;
             }
-            Settings.save();
             Assets.pauseMusic();
         }
     }

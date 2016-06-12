@@ -56,7 +56,8 @@ public class World {
     public float WINGMAN_PROB = 1;
     public float BEE_PROB = 1;
     public float PLATFORM_MOVING_PROB = 0.8f;
-    public float PLATFORM_DISTANCE = MAX_JUMP_HEIGHT / 2;
+    public float PLATFORM_DISTANCE = WORLD_HEIGHT / 3;
+    public float COIN_PROB = 0.7f;
 
     public World(WorldListener listener) {
         this.alien = new Alien(5, 2);
@@ -110,7 +111,7 @@ public class World {
             }
 
             // Add coins
-            if (rand.nextFloat() > 0.6f) {
+            if (rand.nextFloat() > COIN_PROB) {
                 float coinX = x + rand.nextFloat() * WORLD_WIDTH / 4 * (rand.nextFloat() > 0.5f ? -1 : 1);
                 if (coinX < Coin.COIN_WIDTH) {
                     coinX = Coin.COIN_WIDTH / 2;
@@ -143,16 +144,15 @@ public class World {
             }
 
             // Make game harder with progression
-            if (y > WORLD_HEIGHT * 2) {
-                BEE_PROB = 0.8f;
-                PLATFORM_DISTANCE = WORLD_HEIGHT / 3;
-            }
-            if (y > WORLD_HEIGHT * 4) {
-                WINGMAN_PROB = 0.9f;
-                PLATFORM_MOVING_PROB = 0.8f;
-            }
             if (y > WORLD_HEIGHT * 5) {
                 PLATFORM_DISTANCE = WORLD_HEIGHT / 4;
+            } else if (y > WORLD_HEIGHT * 4) {
+                WINGMAN_PROB = 0.9f;
+                PLATFORM_MOVING_PROB = 0.8f;
+            } else if (y > WORLD_HEIGHT * 2) {
+                BEE_PROB = 0.8f;
+                PLATFORM_DISTANCE = WORLD_HEIGHT / 3;
+            } else {
             }
 
             y += MAX_JUMP_HEIGHT - 0.5f;
@@ -191,7 +191,6 @@ public class World {
         }
     }
 
-    // TODO: 06.06.2016 Check if removal is working properly
     private void updatePlatforms(float deltaTime) {
         Iterator<Platform> iterator = platforms.iterator();
         while (iterator.hasNext()) {
